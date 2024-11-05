@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:feather_icons/feather_icons.dart';
+import 'package:todo_app/add_todo.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -37,11 +38,14 @@ class _MainScreenState extends State<MainScreen> {
               // highlightColor: Colors.transparent,
               onTap: () {
                 showModalBottomSheet(
-                  backgroundColor: Colors.red[900],
+                  // backgroundColor: Colors.red[900],
                   context: context,
                   builder: (context) {
                     return Container(
-                      height: 250,
+                      padding: const EdgeInsets.all(20),
+                      height: 200,
+                      // ignore: prefer_const_constructors
+                      child: AddTodo(),
                     );
                   },
                 );
@@ -56,12 +60,7 @@ class _MainScreenState extends State<MainScreen> {
         ],
         // backgroundColor: Colors.blue,
       ),
-      body: InkWell(
-        onTap: () {
-          print("Body Todo");
-        },
-        child: const Text('TODO'),
-      ),
+      body: Container(),
     );
   }
 }
