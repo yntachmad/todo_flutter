@@ -10,6 +10,14 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String text = "Text";
+
+  void changeText({required String todoText}) {
+    setState(() {
+      text = todoText;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +49,16 @@ class _MainScreenState extends State<MainScreen> {
                   // backgroundColor: Colors.red[900],
                   context: context,
                   builder: (context) {
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      height: 200,
-                      // ignore: prefer_const_constructors
-                      child: AddTodo(),
+                    return Padding(
+                      padding: MediaQuery.of(context).viewInsets,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        height: 200,
+                        // ignore: prefer_const_constructors
+                        child: AddTodo(
+                          changeText: changeText,
+                        ),
+                      ),
                     );
                   },
                 );
@@ -60,7 +73,13 @@ class _MainScreenState extends State<MainScreen> {
         ],
         // backgroundColor: Colors.blue,
       ),
-      body: Container(),
+      body: ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(text),
+          );
+        },
+      ),
     );
   }
 }
