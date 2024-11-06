@@ -1,8 +1,11 @@
-import 'package:feather_icons/feather_icons.dart';
+// import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class AddTodo extends StatefulWidget {
-  const AddTodo({super.key});
+  void Function({required String todoText}) changeText;
+
+  AddTodo({super.key, required this.changeText});
 
   @override
   State<AddTodo> createState() => _AddTodoState();
@@ -30,7 +33,8 @@ class _AddTodoState extends State<AddTodo> {
         ),
         ElevatedButton(
           onPressed: () {
-            print(todoText.text);
+            // print(todoText.text);
+            widget.changeText(todoText: todoText.text);
             todoText.clear();
           },
           child: const Text("Add"),
