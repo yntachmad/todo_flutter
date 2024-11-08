@@ -84,6 +84,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: showModalAddTask,
+        backgroundColor: Colors.blueGrey[900],
+        shape: CircleBorder(),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
       // ignore: prefer_const_constructors
       drawer: Drawer(
           // ignore: prefer_const_constructors

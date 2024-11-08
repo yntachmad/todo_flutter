@@ -41,13 +41,38 @@ class _TodolistState extends State<Todolist> {
         : ListView.builder(
             itemCount: widget.todoList.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  onitemClicked(index: index);
+              return Dismissible(
+                key: UniqueKey(),
+                direction: DismissDirection.startToEnd,
+                background: Container(
+                  color: Colors.green[50],
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(Icons.check),
+                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.all(8.0),
+                      //   child: Icon(Icons.remove_circle),
+                      // ),
+                    ],
+                  ),
+                ),
+                onDismissed: (direction) {
+                  setState(() {
+                    widget.todoList.removeAt(index);
+                  });
+                  widget.updateLocalData();
                 },
-                title: Text(widget.todoList[index]),
-                // leading: const Icon(Icons.arrow_circle_up_outlined),
-                // trailing: const Icon(Icons.arrow_circle_up_rounded),
+                child: ListTile(
+                  onTap: () {
+                    onitemClicked(index: index);
+                  },
+                  title: Text(widget.todoList[index]),
+                  // leading: const Icon(Icons.arrow_circle_up_outlined),
+                  // trailing: const Icon(Icons.arrow_circle_up_rounded),
+                ),
               );
             },
           );
