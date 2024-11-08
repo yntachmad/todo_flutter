@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:feather_icons/feather_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/add_todo.dart';
+import 'package:todo_app/widgets/todolist.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -10,12 +13,72 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  String text = "Text";
+  List<String> todoList = [];
 
   void changeText({required String todoText}) {
+    if (todoList.contains(todoText)) {
+      showDialog(
+          context: context,
+          builder: (content) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('This todo already exists.'),
+              actions: [
+                TextButton(
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+      return;
+    }
     setState(() {
-      text = todoText;
+      todoList.insert(0, todoText);
     });
+    Navigator.pop(context);
+    updateLocalData();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadDataLocal();
+  }
+
+  void updateLocalData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('todoList', todoList);
+  }
+
+  void loadDataLocal() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    todoList = (prefs.getStringList('todoList') ?? []).toList();
+    setState(() {});
+  }
+
+  void showModalAddTask() {
+    showModalBottomSheet(
+      // backgroundColor: Colors.red[900],
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            height: 200,
+            // ignore: prefer_const_constructors
+            child: AddTodo(
+              addTodo: changeText,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -23,12 +86,50 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       // ignore: prefer_const_constructors
       drawer: Drawer(
-        // ignore: prefer_const_constructors
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: const Text('Drawer Data'),
-        ),
-      ),
+          // ignore: prefer_const_constructors
+          child: Column(
+        children: [
+          Container(
+            height: 200,
+            width: double.infinity,
+            color: Colors.blueGrey,
+            child: const Center(
+              child: Text(
+                "Todo App",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              launchUrl(
+                Uri.parse("https://www.google.com/"),
+              );
+            },
+            leading: const Icon(Icons.person_2_outlined),
+            title: const Text(
+              'About Me',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              launchUrl(
+                Uri.parse("mailto:achmad_djayanto@careind.or.id"),
+              );
+            },
+            leading: const Icon(Icons.mail_lock_outlined),
+            title: const Text(
+              'Contact Me',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          )
+        ],
+      )),
       appBar: AppBar(
         title: const Text(
           'TODO',
@@ -45,23 +146,7 @@ class _MainScreenState extends State<MainScreen> {
               // splashColor: Colors.transparent,
               // highlightColor: Colors.transparent,
               onTap: () {
-                showModalBottomSheet(
-                  // backgroundColor: Colors.red[900],
-                  context: context,
-                  builder: (context) {
-                    return Padding(
-                      padding: MediaQuery.of(context).viewInsets,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        height: 200,
-                        // ignore: prefer_const_constructors
-                        child: AddTodo(
-                          changeText: changeText,
-                        ),
-                      ),
-                    );
-                  },
-                );
+                showModalAddTask();
               },
               child: const Icon(
                 FeatherIcons.plus,
@@ -73,13 +158,7 @@ class _MainScreenState extends State<MainScreen> {
         ],
         // backgroundColor: Colors.blue,
       ),
-      body: ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(text),
-          );
-        },
-      ),
+      body: Todolist(todoList: todoList, updateLocalData: updateLocalData),
     );
   }
 }
